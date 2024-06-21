@@ -1,0 +1,33 @@
+server:
+  port: 9090
+
+spring.security.oauth2:
+  resourceserver:
+    jwt:
+      jwk-set-uri: http://localhost:8080/realms/salao/protocol/openid-connect/certs
+  client:
+    provider:
+      keycloak:
+        issuer-uri: http://localhost:8080/realms/salao
+    registration:
+      spring-with-test-scope:
+        provider: keycloak
+        client-id: gateway
+        client-secret: 0ZU29flzkkMDWZT2EH6EXTrEBukSHKMX
+        authorization-grant-type: authorization_code
+        scope: openid
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay=
+      routes:
+        - id: salao
+          uri: http://localhost:8081
+          predicates:
+            - Path=/**
+          filters:
+            - TokenRelay=
